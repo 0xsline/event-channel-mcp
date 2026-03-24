@@ -1,11 +1,11 @@
-# event-channel
+# event-channel-mcp
 
 Push platform events into your AI coding session. Monitor any CLI command, API, or webhook and get real-time notifications in Claude Code.
 
 ```
 Platform events (Twitter, GitHub, HN, email...)
     ↓ polling / webhook
-event-channel (MCP stdio server)
+event-channel-mcp (MCP stdio server)
     ↓ claude/channel protocol
 Claude Code session ← notification appears here
 ```
@@ -13,7 +13,7 @@ Claude Code session ← notification appears here
 ## Install
 
 ```bash
-npm install -g event-channel
+npm install -g event-channel-mcp
 ```
 
 ## Quick Start
@@ -21,8 +21,8 @@ npm install -g event-channel
 ### 1. Create config
 
 ```bash
-mkdir -p ~/.config/event-channel
-cat > ~/.config/event-channel/config.yaml << 'EOF'
+mkdir -p ~/.config/event-channel-mcp
+cat > ~/.config/event-channel-mcp/config.yaml << 'EOF'
 sources:
   # Monitor Hacker News top stories
   - name: hackernews
@@ -55,8 +55,8 @@ Add to `~/.claude.json` under `mcpServers`:
 
 ```json
 {
-  "event-channel": {
-    "command": "event-channel",
+  "event-channel-mcp": {
+    "command": "event-channel-mcp",
     "type": "stdio"
   }
 }
@@ -66,9 +66,9 @@ Or for development:
 
 ```json
 {
-  "event-channel": {
+  "event-channel-mcp": {
     "command": "npx",
-    "args": ["event-channel"],
+    "args": ["event-channel-mcp"],
     "type": "stdio"
   }
 }
@@ -77,7 +77,7 @@ Or for development:
 ### 3. Launch
 
 ```bash
-claude --dangerously-load-development-channels server:event-channel
+claude --dangerously-load-development-channels server:event-channel-mcp
 ```
 
 Events will now push into your session automatically.

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * event-channel — Push platform events into your AI coding session.
+ * event-channel-mcp — Push platform events into your AI coding session.
  *
  * MCP server with claude/channel experimental capability.
  * Monitors any CLI command or webhook and delivers notifications.
@@ -16,9 +16,9 @@ import { Watcher } from './watcher.js'
 import type { ChannelConfig } from './types.js'
 
 const CONFIG_PATH = process.env.EVENT_CHANNEL_CONFIG
-  ?? path.join(os.homedir(), '.config', 'event-channel', 'config.yaml')
-const STATE_PATH = path.join(os.homedir(), '.config', 'event-channel', 'state.json')
-const LOCK_PATH = path.join(os.homedir(), '.config', 'event-channel', 'channel.lock')
+  ?? path.join(os.homedir(), '.config', 'event-channel-mcp', 'config.yaml')
+const STATE_PATH = path.join(os.homedir(), '.config', 'event-channel-mcp', 'state.json')
+const LOCK_PATH = path.join(os.homedir(), '.config', 'event-channel-mcp', 'channel.lock')
 const PUSH_INTERVAL = 1000
 const STATE_INTERVAL = 10000
 
@@ -26,7 +26,7 @@ const STATE_INTERVAL = 10000
 console.log = (...args: unknown[]) => console.error(...args)
 
 function log(...args: unknown[]): void {
-  console.error('[event-channel]', ...args)
+  console.error('[event-channel-mcp]', ...args)
 }
 
 // ── Lock ────────────────────────────────────────────────────────────────
@@ -104,12 +104,12 @@ async function main(): Promise<void> {
   }
 
   const mcp = new Server(
-    { name: 'event-channel', version: '0.1.0' },
+    { name: 'event-channel-mcp', version: '0.1.0' },
     {
       capabilities: {
         experimental: { 'claude/channel': {} },
       },
-      instructions: `Platform events arrive as <channel source="event-channel" event_type="...">.
+      instructions: `Platform events arrive as <channel source="event-channel-mcp" event_type="...">.
 Inform the user about new events. Summarize what happened and ask if they want to take action.`,
     },
   )

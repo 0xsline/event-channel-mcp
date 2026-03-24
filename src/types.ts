@@ -1,5 +1,5 @@
 /**
- * event-channel types: events, config, and event source interface.
+ * event-channel-mcp types: events, config, and event source interface.
  */
 
 /** A platform event to be pushed to the AI session. */

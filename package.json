@@ -1,11 +1,11 @@
 {
-  "name": "event-channel",
+  "name": "event-channel-mcp",
   "version": "0.1.0",
   "description": "Push platform events into your AI coding session. A Claude Code Channel that monitors any CLI command, webhook, or script and delivers real-time notifications.",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
-    "event-channel": "dist/server.js"
+    "event-channel-mcp": "dist/server.js"
   },
   "scripts": {
     "dev": "tsx src/server.ts",

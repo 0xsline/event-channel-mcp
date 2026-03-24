@@ -80,5 +80,5 @@ export class Watcher {
 }
 
 function log(...args: unknown[]): void {
-  console.error('[event-channel]', ...args)
+  console.error('[event-channel-mcp]', ...args)
 }
