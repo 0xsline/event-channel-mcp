@@ -1,0 +1,45 @@
+{
+  "name": "event-channel",
+  "version": "0.1.0",
+  "description": "Push platform events into your AI coding session. A Claude Code Channel that monitors any CLI command, webhook, or script and delivers real-time notifications.",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "event-channel": "dist/server.js"
+  },
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude-code",
+    "mcp",
+    "channel",
+    "notifications",
+    "event",
+    "platform",
+    "polling",
+    "webhook",
+    "ai"
+  ],
+  "author": "0xsline",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  }
+}
