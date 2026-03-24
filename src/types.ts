@@ -18,20 +18,46 @@ export interface ChannelEvent {
   timestamp: number
 }
 
+/** Filter rule: match events by field conditions. */
+export interface FilterRule {
+  /** Field name to check */
+  field: string
+  /** Operator */
+  op: 'contains' | 'equals' | 'matches' | 'gt' | 'lt' | 'exists' | 'not_exists'
+  /** Value to compare against (not needed for exists/not_exists) */
+  value?: string | number
+}
+
+/** Transform rule: customize notification content. */
+export interface TransformRule {
+  /** Template string with {{field}} placeholders for content */
+  template?: string
+  /** Fields to include in the notification (default: auto-detect) */
+  fields?: string[]
+  /** Override event type label */
+  eventType?: string
+}
+
 /** Configuration for a single polling source. */
 export interface PollingSourceConfig {
   /** Display name */
   name: string
   /** Shell command to execute (must return JSON array) */
   command: string
-  /** Poll interval in seconds (minimum 30) */
+  /** Poll interval in seconds (minimum 30). Ignored if cron is set. */
   interval: number
+  /** Cron expression (e.g. "0 9 * * *"). Overrides interval if set. */
+  cron?: string
   /** Whether this source is active */
   enabled: boolean
   /** Override field name for dedup key derivation */
   dedupField?: string
   /** JSONPath-like key to extract array from result (e.g. "data.items") */
   jsonPath?: string
+  /** Filter rules: only emit events matching ALL rules (AND logic) */
+  filter?: FilterRule[]
+  /** Transform rule: customize notification content */
+  transform?: TransformRule
 }
 
 /** Configuration for the webhook receiver. */

@@ -1,15 +1,18 @@
 /**
- * Polling event source: executes any shell command on an interval,
- * diffs results against previous snapshot, emits new items.
+ * Polling event source: executes any shell command on an interval or cron schedule,
+ * diffs results against previous snapshot, filters and transforms before emitting.
  */
 
 import { exec } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { Cron } from 'croner'
 import type { ChannelEvent, EventHandler, EventSource, PollingSourceConfig } from '../types.js'
+import { matchesFilter } from '../filter.js'
+import { applyTransform } from '../transform.js'
 
 const MAX_SNAPSHOT_KEYS = 100
 const MIN_INTERVAL = 30
-const EXEC_TIMEOUT = 30_000 // 30s per command
+const EXEC_TIMEOUT = 30_000
 
 export class PollingSource implements EventSource {
   readonly type = 'polling'
@@ -18,6 +21,7 @@ export class PollingSource implements EventSource {
   private readonly handlers: EventHandler[] = []
   private previousKeys = new Set<string>()
   private timer: ReturnType<typeof setTimeout> | null = null
+  private cronJob: Cron | null = null
   private backoffMultiplier = 1
   private consecutiveErrors = 0
   private stopped = false
@@ -33,7 +37,16 @@ export class PollingSource implements EventSource {
   async start(): Promise<void> {
     this.stopped = false
     await this.pollOnce()
-    this.scheduleNext()
+
+    if (this.config.cron) {
+      // Cron-based scheduling
+      this.cronJob = new Cron(this.config.cron, async () => {
+        if (!this.stopped) await this.pollOnce()
+      })
+    } else {
+      // Interval-based scheduling with backoff
+      this.scheduleNext()
+    }
   }
 
   async stop(): Promise<void> {
@@ -41,6 +54,10 @@ export class PollingSource implements EventSource {
     if (this.timer) {
       clearTimeout(this.timer)
       this.timer = null
+    }
+    if (this.cronJob) {
+      this.cronJob.stop()
+      this.cronJob = null
     }
   }
 
@@ -128,11 +145,20 @@ export class PollingSource implements EventSource {
       currentKeys.add(key)
 
       if (!this.previousKeys.has(key)) {
+        // Apply filter: skip items that don't match
+        if (this.config.filter && !matchesFilter(record, this.config.filter)) {
+          continue
+        }
+
+        // Apply transform: customize content
+        const transformed = applyTransform(record, this.config.transform)
+        const eventType = this.config.transform?.eventType ?? 'new_item'
+
         newItems.push({
           id: `${this.config.name}:${key}`,
           source: this.config.name,
-          eventType: 'new_item',
-          content: this.formatItem(record),
+          eventType,
+          content: transformed ?? this.formatItem(record),
           raw: item,
           timestamp: Date.now(),
         })
